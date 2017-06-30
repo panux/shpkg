@@ -1,3 +1,5 @@
+#!/bin/sh
+
 CONFIG=/etc/shpkg/pkg.conf
 PKGLIST=/etc/shpkg/pkgs.list
 
