@@ -3,19 +3,19 @@
 CONFIG=/etc/shpkg/pkg.conf
 PKGLIST=/etc/shpkg/pkgs.list
 
-function loadconfig() {
+loadconfig() {
     source $CONFIG
 }
-function loadpkglist() {
+loadpkglist() {
     PKGS=$(cat $PKGLIST | tr "\n" " ")
 }
 
-function savepkglist {
-    printf '%s\n' "${PKGS[@]}" > $PKGLIST
+savepkglist() {
+    printf '%s\n' "$@" > $PKGLIST
 }
 
 TMPDIR=$(mktemp -d)
-function cleanup() {
+cleanup() {
     rm -rf $TMPDIR
 }
 
@@ -23,7 +23,6 @@ echo "Loading config"
 loadconfig
 echo "Loading package list"
 loadpkglist
-
 
 case $1 in
 install)
@@ -53,12 +52,12 @@ install)
     source "$TMPDIR/.pkginfo"
     rm "$TMPDIR/.pkginfo"
     echo "Installing dependencies for $2"
-    for i in "${DEPENDENCIES[@]}"; do
+    for i in $DEPENDENCIES; do
         shpkg install "$i" || { echo "Failed to install $i"; exit 5 }
     done
     loadpkglist
     tar -xvf "$TMPDIR/$2.tar.xz" -C / || { echo "Failed to extract package"; exit 4 }
-    PKGS+=("$2")
-    savepkglist
+    PKGS+=" $2"
+    savepkglist $PKGS
     ;;
 esac
