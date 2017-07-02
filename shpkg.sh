@@ -51,18 +51,18 @@ install)
     fi
     PKGDIR="$TMPDIR"
     echo "Downloading package and sig"
-    wget "$REPO/pkgs/$2.tar.xz" -O "$TMPDIR/$2.tar.xz" || { echo "Download error"; exit 2 }
-    wget "$REPO/pkgs/$2.tar.xz.sig" -O "$TMPDIR/$2.tar.xz.sig" || { echo "Download error"; exit 2 }
-    gpg --verify "$TMPDIR/$2.tar.xz.sig" "$TMPDIR/$2.tar.xz" --homedir "$GPGDIR" || { echo "GPG verification error"; exit 3 }
-    tar -xf "$TMPDIR/$2.tar.xz" -C "$TMPDIR" .pkginfo || { echo "Failed to extract .pkginfo"; exit 4 }
+    wget "$REPO/pkgs/$2.tar.xz" -O "$TMPDIR/$2.tar.xz" || { echo "Download error"; exit 2; }
+    wget "$REPO/pkgs/$2.tar.xz.sig" -O "$TMPDIR/$2.tar.xz.sig" || { echo "Download error"; exit 2; }
+    gpg --verify "$TMPDIR/$2.tar.xz.sig" "$TMPDIR/$2.tar.xz" --homedir "$GPGDIR" || { echo "GPG verification error"; exit 3; }
+    tar -xf "$TMPDIR/$2.tar.xz" -C "$TMPDIR" .pkginfo || { echo "Failed to extract .pkginfo"; exit 4; }
     source "$TMPDIR/.pkginfo"
     rm "$TMPDIR/.pkginfo"
     echo "Installing dependencies for $2"
     for i in $DEPENDENCIES; do
-        shpkg install "$i" || { echo "Failed to install $i"; exit 5 }
+        shpkg install "$i" || { echo "Failed to install $i"; exit 5; }
     done
     loadpkglist
-    tar -xvf "$TMPDIR/$2.tar.xz" -C / || { echo "Failed to extract package"; exit 4 }
+    tar -xvf "$TMPDIR/$2.tar.xz" -C / || { echo "Failed to extract package"; exit 4; }
     PKGS+=" $2"
     savepkglist $PKGS
     ;;
