@@ -19,6 +19,14 @@ cleanup() {
     rm -rf $TMPDIR
 }
 
+installed() {
+    for i in $@; do
+        if [ "$i" == "$PKG" ]; then
+            return 1
+        fi
+    done
+}
+
 echo "Loading config"
 loadconfig
 echo "Loading package list"
@@ -31,9 +39,7 @@ install)
         exit 1
     fi
     PKG="$2"
-    if [[ " ${PKGS[@]} " =~ " ${PKG} " ]]; then
-        echo "$PKG already installed. Nothing to do."
-    fi
+    installed $PKGS || { echo "$PKG is installed. Nothing to do."; exit 0; }
     echo "Installing $2"
     if [ -z "$REPO" ]; then
         echo "REPO not set"
