@@ -51,10 +51,10 @@ install)
     fi
     PKGDIR="$TMPDIR"
     echo "Downloading package and sig"
-    wget "$REPO/pkgs/$2.tar.xz" -O "$TMPDIR/$2.tar.xz" || { echo "Download error"; exit 2; }
+    wget "$REPO/pkgs/$2.tar.xz" -O "$TMPDIR/$2.tar" || { echo "Download error"; exit 2; }
     wget "$REPO/pkgs/$2.sig" -O "$TMPDIR/$2.sig" || { echo "Download error"; exit 2; }
-    gpg --verify "$TMPDIR/$2.sig" "$TMPDIR/$2.tar.xz" --homedir "$GPGDIR" || { echo "GPG verification error"; exit 3; }
-    tar -xf "$TMPDIR/$2.tar.xz" -C "$TMPDIR" .pkginfo || { echo "Failed to extract .pkginfo"; exit 4; }
+    gpg --homedir "$GPGDIR" --verify "$TMPDIR/$2.sig" "$TMPDIR/$2.tar" || { echo "GPG verification error"; exit 3; }
+    tar -xf "$TMPDIR/$2.tar" -C "$TMPDIR" ./.pkginfo || { echo "Failed to extract .pkginfo"; exit 4; }
     source "$TMPDIR/.pkginfo"
     rm "$TMPDIR/.pkginfo"
     echo "Installing dependencies for $2"
