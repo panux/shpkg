@@ -18,6 +18,7 @@ TMPDIR=$(mktemp -d)
 cleanup() {
     rm -rf $TMPDIR
 }
+trap cleanup EXIT
 
 installed() {
     for i in $@; do
