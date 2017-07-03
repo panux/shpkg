@@ -62,8 +62,8 @@ install)
         shpkg install "$i" || { echo "Failed to install $i"; exit 5; }
     done
     loadpkglist
-    tar -xvf "$TMPDIR/$2.tar.xz" -C / || { echo "Failed to extract package"; exit 4; }
-    PKGS+=" $2"
+    tar -xvf "$TMPDIR/$2.tar" -C / || { echo "Failed to extract package"; exit 4; }
+    PKGS="$PKGS $2"
     savepkglist $PKGS
     ;;
 esac
