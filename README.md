@@ -1,4 +1,4 @@
-# shpkg (WIP)
+# shpkg (WIP) [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/panux/panux-dev)
 A package manager written in shell script
 
 # __WARNING: WIP SOFTWARE__
