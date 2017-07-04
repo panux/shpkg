@@ -12,7 +12,7 @@ fi
 if [ -z $PKGLIST ]; then
     PKGLIST=$SHPKGDIR/pkgs.list
 fi
-if [ -z $SHPKG ]; then
+if [ -z "$SHPKG" ]; then
     SHPKG=shpkg
 fi
 
