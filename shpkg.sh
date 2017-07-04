@@ -54,7 +54,7 @@ load() {
 
 case $1 in
 bootstrap)
-    if [ $ROOTFS == / ]; then
+    if [ "$ROOTFS" == / ]; then
         echo "ROOTFS not set. Aborting."
         exit 1
     fi
