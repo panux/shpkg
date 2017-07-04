@@ -75,7 +75,7 @@ bootstrap)
     export ROOTFS
     export CONFIG
     export PKGLIST
-    export SHPKG=$2/shpkg.sh
+    export SHPKG
     chmod 700 $SHPKG
     $SHPKG install base
     mv $PKGLIST $ROOTFS/etc/shpkg/pkgs.list
