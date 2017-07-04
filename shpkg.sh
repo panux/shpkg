@@ -1,7 +1,20 @@
 #!/bin/sh
 
-CONFIG=/etc/shpkg/pkg.conf
-PKGLIST=/etc/shpkg/pkgs.list
+if [ -z $ROOTFS ]; then
+    ROOTFS=/
+fi
+if [ -z $SHPKGDIR ]; then
+    SHPKGDIR=$ROOTFS/etc/shpkg
+fi
+if [ -z $CONFIG ]; then
+    CONFIG=$SHPKGDIR/pkg.conf
+fi
+if [ -z $PKGLIST ]; then
+    PKGLIST=$SHPKGDIR/pkgs.list
+fi
+if [ -z $SHPKG ]; then
+    SHPKG=shpkg
+fi
 
 loadconfig() {
     source $CONFIG
@@ -17,6 +30,9 @@ savepkglist() {
 TMPDIR=$(mktemp -d)
 cleanup() {
     rm -rf $TMPDIR
+    if [ ! -z "$CLEANFILES" ]; then
+        rm -f $CLEANFILES
+    fi
 }
 trap cleanup EXIT
 
@@ -28,13 +44,44 @@ installed() {
     done
 }
 
-echo "Loading config"
-loadconfig
-echo "Loading package list"
-loadpkglist
+load() {
+    export SHPKGDIR
+    echo "Loading config"
+    loadconfig
+    echo "Loading package list"
+    loadpkglist
+}
 
 case $1 in
+bootstrap)
+    if [ $ROOTFS == / ]; then
+        echo "ROOTFS not set. Aborting."
+        exit 1
+    fi
+    if [ "$#" -ne 2 ]; then
+        echo "I dont know where my files are!"
+        exit 1
+    fi
+    echo "Initializing shpkg"
+    CONFIG=$2/default.conf
+    PKGLIST=$2/pkgs.list
+    touch $PKGLIST
+    load
+    CONFIG=$2/tmp.conf
+    CLEANFILES="$CONFIG $PKGLIST"
+    echo REPO=$REPO > $CONFIG
+    echo GPGDIR=~/.gnupg >> $CONFIG
+    export SHPKGDIR=$2
+    export ROOTFS
+    export CONFIG
+    export PKGLIST
+    export SHPKG=$2/shpkg.sh
+    chmod 700 $SHPKG
+    $SHPKG install base
+    mv $PKGLIST $ROOTFS/etc/shpkg/pkgs.list
+    ;;
 install)
+    load
     if [ "$#" -ne 2 ]; then
         echo "I dont know what to install!"
         exit 1
@@ -60,10 +107,10 @@ install)
     rm "$TMPDIR/.pkginfo"
     echo "Installing dependencies for $2"
     for i in $DEPENDENCIES; do
-        shpkg install "$i" || { echo "Failed to install $i"; exit 5; }
+        $SHPKG install "$i" || { echo "Failed to install $i"; exit 5; }
     done
     loadpkglist
-    tar -xvf "$TMPDIR/$2.tar" -C / || { echo "Failed to extract package"; exit 4; }
+    tar -xvf "$TMPDIR/$2.tar" -C $ROOTFS || { echo "Failed to extract package"; exit 4; }
     PKGS="$PKGS $2"
     savepkglist $PKGS
     ;;
